@@ -1,6 +1,7 @@
 framework:
     workflows:
         invoice_payment:
+            audit_trail: true
             supports:
                 - 'App\Entity\Invoice'
             marking_store:
