@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Message;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -11,6 +12,7 @@ class AbortPaymentHandler
 {
     public function __construct(
         private readonly WorkflowInterface $invoicePaymentStateMachine,
+        private readonly EntityManagerInterface $entityManager,
     )
     {
     }
@@ -23,5 +25,6 @@ class AbortPaymentHandler
         }
 
         $this->invoicePaymentStateMachine->apply($invoice, 'abort');
+        $this->entityManager->flush();
     }
 }

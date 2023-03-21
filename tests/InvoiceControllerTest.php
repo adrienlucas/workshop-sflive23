@@ -39,6 +39,32 @@ class InvoiceControllerTest extends WebTestCase
         $this->assertSame('pending', $payResponse['payment_state']);
     }
 
+    public function testPendingInvoiceAbort(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/checkout');
+        $checkoutResponse = json_decode($client->getResponse()->getContent(), true);
+
+        $client->request('GET', '/pay/'.$checkoutResponse['invoice_id']);
+        $this->assertResponseIsSuccessful();
+
+        $client->request('GET', '/abort/'.$checkoutResponse['invoice_id']);
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testAbortedInvoicePay(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/checkout');
+        $checkoutResponse = json_decode($client->getResponse()->getContent(), true);
+
+        $client->request('GET', '/abort/'.$checkoutResponse['invoice_id']);
+        $this->assertResponseIsSuccessful();
+
+        $client->request('GET', '/pay/'.$checkoutResponse['invoice_id']);
+        $this->assertResponseStatusCodeSame(400);
+    }
+
     public function testInvoiceAbort(): void
     {
         $client = static::createClient();
