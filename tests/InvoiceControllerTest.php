@@ -13,7 +13,7 @@ class InvoiceControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $jsonResponse = json_decode($client->getResponse()->getContent(), true);
-        
+
         $this->assertArrayHasKey('invoice_id', $jsonResponse);
         $this->assertSame(1, $jsonResponse['invoice_id']);
 
