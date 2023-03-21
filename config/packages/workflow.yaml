@@ -1,6 +1,11 @@
 framework:
     workflows:
         invoice_payment:
+            supports:
+                - 'App\Entity\Invoice'
+            marking_store:
+                type: method
+                property: paymentState
             places:
                 - required
                 - pending

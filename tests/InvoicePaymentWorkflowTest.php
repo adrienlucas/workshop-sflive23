@@ -2,16 +2,24 @@
 
 namespace App\Tests;
 
+use App\Entity\Invoice;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class InvoicePaymentWorkflowTest extends KernelTestCase
 {
-    public function testSomething(): void
+    public function testPaymentWorkflowTransitions(): void
     {
         $kernel = self::bootKernel();
+        // debug:container payment
+        // > WorkflowInterface
+        $paymentWorkflow = static::getContainer()->get('state_machine.invoice_payment');
+        $this->assertInstanceOf(WorkflowInterface::class, $paymentWorkflow);
 
-        $this->assertSame('test', $kernel->getEnvironment());
-        // $routerService = static::getContainer()->get('router');
-        // $myCustomService = static::getContainer()->get(CustomService::class);
+        $invoice = new Invoice();
+        $this->assertNull($invoice->getPaymentState());
+
+        $paymentWorkflow->getMarking($invoice);
+        $this->assertSame('required', $invoice->getPaymentState());
     }
 }
