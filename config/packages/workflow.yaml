@@ -1,2 +1,22 @@
 framework:
-    workflows: null
+    workflows:
+        invoice_payment:
+            places:
+                - required
+                - pending
+                - aborted
+                - paid
+                - failed
+            transitions:
+                submit_request:
+                    from: required
+                    to: pending
+                abort:
+                    from: required
+                    to: aborted
+                pay:
+                    from: pending
+                    to: paid
+                fail:
+                    from: pending
+                    to: failed
