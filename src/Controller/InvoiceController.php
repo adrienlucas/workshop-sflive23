@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Invoice;
+use App\Message\SubmitPaymentRequestMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -30,11 +32,13 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/pay/{id}')]
-    public function pay(Invoice $invoice): JsonResponse
+    public function pay(Invoice $invoice, MessageBusInterface $messageBus): JsonResponse
     {
+        $messageBus->dispatch(new SubmitPaymentRequestMessage($invoice));
+
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/InvoiceController.php',
+            'invoice_id' => $invoice->getId(),
+            'payment_state' =>$invoice->getPaymentState(),
         ]);
     }
 
