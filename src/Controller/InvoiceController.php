@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Invoice;
+use App\Message\AbortPaymentMessage;
 use App\Message\SubmitPaymentRequestMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,11 +44,12 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/abort/{id}')]
-    public function abort(Invoice $invoice): JsonResponse
+    public function abort(Invoice $invoice, MessageBusInterface $messageBus): JsonResponse
     {
+        $messageBus->dispatch(new AbortPaymentMessage($invoice));
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/InvoiceController.php',
+            'invoice_id' => $invoice->getId(),
+            'payment_state' => $invoice->getPaymentState(),
         ]);
     }
 }
